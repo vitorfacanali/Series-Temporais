@@ -1,0 +1,1139 @@
+import pandas as pd
+
+import numpy as np
+
+import seaborn as sns
+
+import matplotlib.pyplot as plt
+
+from sklearn.preprocessing import StandardScaler, LabelEncoder, RobustScaler
+
+from sklearn.model_selection import train_test_split, KFold, cross_validate
+
+from sklearn.metrics import accuracy_score, log_loss, precision_score
+
+from sklearn.svm import SVC
+
+from sklearn.neighbors import KNeighborsClassifier
+
+from sklearn.naive_bayes import GaussianNB, MultinomialNB
+
+from sklearn.linear_model import LogisticRegression
+
+from sklearn.tree import DecisionTreeClassifier
+
+from sklearn.ensemble import RandomForestClassifier
+
+from sklearn_extra.cluster import KMedoids
+
+ 
+
+import warnings
+
+warnings.filterwarnings('ignore')
+
+ 
+
+import os, sys, pyodbc;
+
+import pandas.io.sql as psql
+
+import pandas as pd
+
+from sklearn.cluster import KMeans
+
+from sklearn.metrics import silhouette_score
+
+from sklearn.decomposition import PCA
+
+from sklearn.impute import SimpleImputer
+
+from sklearn.preprocessing import StandardScaler,MinMaxScaler
+
+from sklearn.model_selection import train_test_split
+
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
+
+from sklearn.model_selection import cross_validate
+
+from sklearn.metrics import confusion_matrix, accuracy_score
+
+from sklearn.cluster import DBSCAN, KMeans
+
+from sklearn.mixture import GaussianMixture
+
+from scipy import linalg
+
+import matplotlib.pyplot as plt
+
+import seaborn as sns
+
+from scipy import stats
+
+from sklearn.decomposition import PCA
+
+from sklearn.impute import SimpleImputer
+
+from sklearn.preprocessing import StandardScaler
+
+from sklearn.model_selection import train_test_split
+
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
+
+from sklearn.model_selection import cross_validate
+
+from sklearn.metrics import confusion_matrix, accuracy_score
+
+import numpy as np
+
+from pprint import pprint
+
+ 
+
+ 
+
+ 
+
+from sklearn.cluster import AgglomerativeClustering
+
+import numpy as np
+
+import matplotlib.pyplot as plt
+
+from scipy.cluster.hierarchy import dendrogram
+
+from fuzzywuzzy import fuzz
+
+from operator import itemgetter
+
+ 
+
+ 
+
+import pandas as pd
+
+from statsmodels.tsa.seasonal import seasonal_decompose
+
+import matplotlib.pyplot as plt
+
+import seaborn as sns
+
+import itertools
+
+import tqdm
+
+import statistics
+
+ 
+
+ 
+
+ 
+
+ 
+
+for col in df_teste.columns:
+
+    a = col.split("_")
+
+    diames = ''
+
+    if a[0] == "jan":
+
+        diames= '01/01'
+
+    elif a[0] == "fev":
+
+        diames= '01/02'
+
+    elif a[0] == "mar":
+
+        diames= '01/03'
+
+    elif a[0] == "abr":
+
+        diames= '01/04'
+
+    elif a[0] == "mai":
+
+        diames= '01/05'
+
+    elif a[0] == "jun":
+
+        diames= '01/06'
+
+    elif a[0] == "jul":
+
+        diames= '01/07'
+
+    elif a[0] == "ago":
+
+        diames= '01/08'
+
+    elif a[0] == "set":
+
+        diames= '01/09'
+
+    elif a[0] == "out":
+
+        diames= '01/10'
+
+    elif a[0] == "nov":
+
+        diames= '01/11'
+
+    elif a[0] == "dez":
+
+        diames= '01/12'
+
+   
+
+    if diames != '':
+
+        rename = diames + '/' + a[1]
+
+        df_teste.rename(columns = {col:rename}, inplace = True)
+
+ 
+
+ 
+
+ 
+
+################################## ANALISE ####################
+
+ 
+
+ 
+
+ 
+
+for a in range(5):
+
+    sns.set_theme(style="darkgrid")
+
+    row = df_teste.iloc[a,74:146]
+
+    # print(row)
+
+    row.plot(figsize=(10,5))
+
+    plt.show()
+
+ 
+
+ 
+
+ 
+
+df_teste['parque'] = 1
+
+df_teste1 = df_teste.groupby('parque').sum()
+
+row = df_teste1.iloc[0,74:146]
+
+sns.set_theme(style="darkgrid")
+
+row.plot(title='parque', figsize=(10,5))
+
+plt.show()
+
+df_teste.drop('parque', 1, inplace = True)
+
+ 
+
+ 
+
+clusters = df_teste.cluster.unique()
+
+clusters = sorted(clusters)
+
+classificacoes = ['outlier_inferior', 'promotora', 'mediana','ofensora','outlier_superior']
+
+ 
+
+df_teste1 = df_teste.groupby(['classificacao','cluster'], ).sum().reset_index()
+
+#print(df_teste1.columns)
+
+for classificacao in classificacoes:
+
+    df_teste2 = df_teste1.loc[df_teste1['classificacao'] == classificacao]
+
+    if len(df_teste2) > 0:
+
+        for cluster in clusters:
+
+            df_teste3 = df_teste2.loc[df_teste1['cluster'] == cluster]
+
+            if len(df_teste3) > 0:
+
+                row = df_teste3.iloc[0,74:146]
+
+                sns.set_theme(style="darkgrid")
+
+                row.plot(title='Cluster '+str(cluster)+' '+classificacao, figsize=(10,5))     
+
+                # plt.savefig('Cluster ' + str(cluster)+' '+classificacao + '.png')
+
+                plt.show()
+
+ 
+
+ 
+
+ 
+
+############ PREVISAO ##############
+
+ 
+
+ 
+
+from pmdarima.arima import ADFTest
+
+from pmdarima.arima import auto_arima
+
+ 
+
+def adf(serie):
+
+    adf_teste = ADFTest(alpha=0.05)
+
+    print(adf_teste.should_diff(serie))
+
+   
+
+ 
+
+def split_train_test(serie):
+
+    train = serie[14:69]
+
+    train = serie[0:62]
+
+    test = serie[-12:]
+
+    return(train, test)
+
+ 
+
+def prediction(train, test, serie):
+
+    sarimaParameters = {'p': 1, 'd': 1, 'q': 4, 'P': 0, 'D': 0, 'Q': 0, 'm': 12}
+
+    p = sarimaParameters['p']
+
+    d = sarimaParameters['d']
+
+    q = sarimaParameters['q']
+
+    P = sarimaParameters['P']
+
+    D = sarimaParameters['D']
+
+    Q = sarimaParameters['Q']
+
+    m = sarimaParameters['m']
+
+#     arima = SARIMAX(train, order=(p, d, q), seasonal_order=(P, D, Q, m))
+
+   
+
+    arima = auto_arima(train, seasonal=True, random_state=20, start_p=0, d=1, start_q=0, max_p=5, max_d=5, max_q=5,
+
+                      start_P=0, D=1, start_Q=0, max_P=5, max_D=5, max_Q=5, m=12, trace = True, stepwise=True,n_fits=20)
+
+   
+
+#     arima = arima.fit()
+
+       
+
+    media_movel = train.rolling(12).mean()
+
+    media_movel = media_movel[-12:].values
+
+   
+
+    media_movel_2 = train.rolling(3).mean()
+
+    media_movel_2 = media_movel_2[-12:].values
+
+   
+
+    media_movel_3 = train.rolling(6).mean()
+
+    media_movel_3 = media_movel_3[-12:].values
+
+   
+
+    media_movel_4 = train.rolling(2).mean()
+
+    media_movel_4 = media_movel_4[-12:].values
+
+   
+
+    prev_arima = arima.predict(n_periods = 12)
+
+   
+
+    
+
+    prev_1 = (media_movel_2 + media_movel_4 + prev_arima)/3
+
+    prev_2 = prev_arima
+
+   
+
+    
+
+    # print(abs(sum(test) - sum(prev_1)), abs(sum(test) - sum(prev_2)))
+
+   
+
+    if abs(sum(test) - sum(prev_1)) > abs(sum(test) - sum(prev_2)):
+
+        prev = prev_arima
+
+    else:
+
+        prev = prev_1
+
+   
+
+    previsoes = pd.DataFrame(prev, index=test.index, columns=['previsoes'])
+
+   
+
+    a = sum(prev)
+
+    b = sum(test)
+
+    d = (a/b-1)*100
+
+   
+
+    print('previsão de consumo ano: ', a)
+
+    print('consumo real: ', b)
+
+    print('erro percentual prev: {:.2f}%'.format(d))
+
+   
+
+    
+
+    plt.figure(figsize=(8,5))
+
+    plt.plot(train, label='treino')
+
+    plt.plot(test, label='teste')
+
+    plt.plot(previsoes, label='previsao_final')
+
+    plt.legend(loc = 'upper left')
+
+    plt.show()  
+
+    
+
+    
+
+    return(b,a,d, arima)
+
+ 
+
+ 
+
+####################### TESTE #############
+
+df_teste['parque'] = 1
+
+df_teste1 = df_teste.groupby('parque').sum()
+
+df_teste.drop('parque', 1, inplace = True)
+
+row = df_teste1.iloc[0,74:146]
+
+row = df_teste1.iloc[0,74:146]
+
+   
+
+df_comb =pd.DataFrame(list(zip(row.index,row)),columns=['DATE','VALUE'])
+
+ 
+
+df_comb['DATE'] = pd.to_datetime(df_comb['DATE'], format="%d/%m/%Y")
+
+df_comb['VALUE'] = df_comb['VALUE'].astype(float)
+
+ 
+
+serie = pd.Series(df_comb['VALUE'].values, index = df_comb['DATE'])
+
+ 
+
+print('################### parque #####################')
+
+train, test = split_train_test(serie)
+
+consumo,previsao,erro, modelo = prediction(train, test, serie)
+
+ 
+
+ 
+
+ 
+
+ 
+
+############ todos ##############
+
+classificacoes = ['promotora', 'mediana','ofensora']
+
+df_decompose = df_teste.copy()
+
+ 
+
+# df_decompose = df_decompose.loc[df_decompose['classificacao'].str.contains('promotora|mediana|ofensora')]
+
+ 
+
+df_decompose.drop('cluster', 1, inplace = True)
+
+df_decompose.drop('classificacao', 1, inplace = True)
+
+ 
+
+from scipy import stats
+
+ 
+
+resultados = [[]]
+
+for a in tqdm.tqdm(range(len(df_teste))): 
+
+#for a in range(10):
+
+    row = df_decompose.iloc[a,74:146]
+
+#     row = df_decompose.iloc[a,121:146]
+
+    
+
+    df_comb =pd.DataFrame(list(zip(row.index,row)),columns=['DATE','VALUE'])
+
+    
+
+    df_comb['DATE'] = pd.to_datetime(df_comb['DATE'], format="%d/%m/%Y")
+
+    df_comb['VALUE'] = df_comb['VALUE'].astype(float)
+
+   
+
+    serie = pd.Series(df_comb['VALUE'].values, index = df_comb['DATE'])
+
+   
+
+    
+
+    # removendo outliers
+
+    median = serie.median()
+
+    std = serie.std()
+
+    outliers = (serie - median).abs() > std
+
+    serie[outliers] = median
+
+   
+
+    
+
+    
+
+ 
+
+   
+
+    print('################### agência ' + str(df_decompose.iloc[a,0]) + ' #####################')
+
+ 
+
+    train, test = split_train_test(serie)
+
+    consumo,previsao,erro, modelo = prediction(train, test, serie)
+
+   
+
+    resultados.append((str(df_decompose.iloc[a,0]), previsao, consumo, erro, modelo))
+
+ 
+
+ 
+
+############ resultados ################
+
+ 
+
+df_resultados = pd.DataFrame(resultados, columns = ['agencia', 'previsao', 'consumo', 'erro', 'modelo'])
+
+df_resultados.dropna()
+
+ 
+
+erros = df_resultados['erro'].values
+
+print(statistics.median(erros))
+
+ 
+
+f = plt.figure(figsize=(12,8))
+
+sns.boxplot(data = erros)
+
+ 
+
+qtd = 0
+
+for erro in erros:
+
+    if erro > -2 and erro < 2:
+
+        qtd = qtd + 1
+
+print(qtd/len(erros))
+
+ 
+
+qtd = 0
+
+for erro in erros:
+
+    if erro > -5 and erro < 5:
+
+        qtd = qtd + 1
+
+print(qtd/len(erros))
+
+ 
+
+qtd = 0
+
+for erro in erros:
+
+    if erro > -7 and erro < 7:
+
+        qtd = qtd + 1
+
+print(qtd/len(erros))
+
+ 
+
+qtd = 0
+
+for erro in erros:
+
+    if erro > -10 and erro < 10:
+
+        qtd = qtd + 1
+
+print(qtd/len(erros))
+
+ 
+
+ 
+
+print(len(df_resultados))
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+######################### XGBoost ######################
+
+import pandas as pd
+
+import xgboost as xgb
+
+from sklearn.datasets import load_boston
+
+from sklearn.model_selection import train_test_split
+
+from sklearn.metrics import mean_squared_error
+
+ 
+
+ 
+
+# forecast monthly births with xgboost
+
+from numpy import asarray
+
+from pandas import read_csv
+
+from pandas import DataFrame
+
+from pandas import concat
+
+from sklearn.metrics import mean_absolute_error
+
+from xgboost import XGBRegressor
+
+from matplotlib import pyplot
+
+ 
+
+# transform a time series dataset into a supervised learning dataset
+
+def series_to_supervised(data, n_in=1, n_out=1, dropnan=True):
+
+    n_vars = 1 if type(data) is list else data.shape[0]
+
+    df = DataFrame(data)
+
+    cols = list()
+
+    # input sequence (t-n, ... t-1)
+
+    for i in range(n_in, 0, -1):
+
+        cols.append(df.shift(i))
+
+    # forecast sequence (t, t+1, ... t+n)
+
+    for i in range(0, n_out):
+
+        cols.append(df.shift(-i))
+
+    # put it all together
+
+    agg = concat(cols, axis=1)
+
+    # drop rows with NaN values
+
+    if dropnan:
+
+        agg.dropna(inplace=True)
+
+    return agg.values
+
+ 
+
+# split a univariate dataset into train/test sets
+
+def train_test_split(data, n_test):
+
+    return data[:-n_test, :], data[-n_test:, :]
+
+ 
+
+# fit an xgboost model and make a one step prediction
+
+def xgboost_forecast(train, testX):
+
+    # transform list into array
+
+    train = asarray(train)
+
+    # split into input and output columns
+
+    trainX, trainy = train[:, :-1], train[:, -1]
+
+    # fit model
+
+    model = XGBRegressor(objective='reg:squarederror', n_estimators=1000)
+
+    model.fit(trainX, trainy)
+
+    # make a one-step prediction
+
+    yhat = model.predict(asarray([testX]))
+
+    return yhat[0]
+
+ 
+
+# walk-forward validation for univariate data
+
+def walk_forward_validation(data, n_test):
+
+    predictions = list()
+
+    # split dataset
+
+    train, test = train_test_split(data, n_test)
+
+    # seed history with training dataset
+
+    history = [x for x in train]
+
+    # step over each time-step in the test set
+
+    for i in range(len(test)):
+
+        # split test row into input and output columns
+
+        testX, testy = test[i, :-1], test[i, -1]
+
+        # fit model on history and make a prediction
+
+        yhat = xgboost_forecast(history, testX)
+
+        # store forecast in list of predictions
+
+        predictions.append(yhat)
+
+        # add actual observation to history for the next loop
+
+        history.append(test[i])
+
+        # summarize progress
+
+#         print('>expected=%.1f, predicted=%.1f' % (testy, yhat))
+
+    # estimate prediction error
+
+    error = mean_absolute_error(test[:, -1], predictions)
+
+    return error, test[:, -1], predictions
+
+ 
+
+# load the dataset
+
+df_decompose = df_teste.copy()
+
+df_decompose.drop('cluster', 1, inplace = True)
+
+df_decompose.drop('classificacao', 1, inplace = True)
+
+row = df_decompose.iloc[1,74:146]
+
+df_comb =pd.DataFrame(list(zip(row.index,row)),columns=['DATE','VALUE'])
+
+ 
+
+df_comb['DATE'] = pd.to_datetime(df_comb['DATE'], format="%d/%m/%Y")
+
+df_comb['VALUE'] = df_comb['VALUE'].astype(float)
+
+ 
+
+serie = pd.Series(df_comb['VALUE'].values, index = df_comb['DATE'])
+
+ 
+
+values = serie.values
+
+# transform the time series data into supervised learning
+
+n_in=18
+
+data = series_to_supervised(values, n_in)
+
+# evaluate
+
+mae, y, yhat = walk_forward_validation(data, 2*n_in)
+
+print('MAE: %.3f' % mae)
+
+# plot expected vs preducted
+
+ 
+
+ 
+
+yhat = pd.DataFrame(yhat, index=df_comb['DATE'].iloc[:-(2*n_in-1)], columns=['predito'])
+
+y = pd.DataFrame(y, index=df_comb['DATE'].iloc[:-(2*n_in-1)], columns=['experado'])
+
+ 
+
+plt.figure(figsize=(8,5))
+
+plt.plot(y, label='Expected')
+
+plt.plot(yhat, label='Predicted')
+
+plt.legend()
+
+plt.show()
+
+ 
+
+ 
+
+############### JANELAMENTO #############
+
+from statsmodels.tsa.statespace.sarimax import SARIMAX
+
+import plotly.graph_objects as go
+
+from sklearn import metrics
+
+ 
+
+ 
+
+def split_train_test(serie):
+
+    train = serie[14:69]
+
+    train = serie[0:59]
+
+    test = serie[-12:]
+
+    return(train, test)  
+
+    
+
+ 
+
+ 
+
+def rollinwWndow(treino, teste, janela, sarimaParameters, agencia):
+
+    p = sarimaParameters['p']
+
+    d = sarimaParameters['d']
+
+    q = sarimaParameters['q']
+
+    P = sarimaParameters['P']
+
+    D = sarimaParameters['D']
+
+    Q = sarimaParameters['Q']
+
+    m = sarimaParameters['m']
+
+    previsoes = []
+
+    for step in range(1, treino.shape[0]-1):
+
+        tr = treino[(0+(step-1)):(janela + (step-1))].copy()
+
+        arima = SARIMAX(tr, order=(p, d, q), seasonal_order=(P, D, Q, m)) # estimando o modelo
+
+        arima = arima.fit()
+
+        forecast = arima.get_forecast(steps = 1)
+
+        previsoes.append(forecast.predicted_mean.iloc[0])
+
+       
+
+        
+
+    
+
+    media_movel_12_meses = treino.rolling(janela).mean()
+
+    media_movel_12_meses = media_movel_12_meses[-janela:].values
+
+   
+
+    media_movel_3_meses = treino.rolling(3).mean()
+
+    media_movel_3_meses = media_movel_3_meses[-janela:].values
+
+   
+
+    media_movel_6_meses = treino.rolling(6).mean()
+
+    media_movel_6_meses = media_movel_6_meses[-janela:].values
+
+   
+
+    media_movel_2_meses = treino.rolling(2).mean()
+
+    media_movel_2_meses = media_movel_2_meses[-janela:].values
+
+   
+
+    previsoes_mm = (media_movel_12_meses + media_movel_6_meses + previsoes[-janela:])/3
+
+           
+
+    index_prev_parcial = treino.index[janela-1:-3]
+
+    index_prev_parcial = index_prev_parcial.append([teste.index])
+
+   
+
+    previsoes = pd.DataFrame(previsoes, index=index_prev_parcial)
+
+    previsoes_mm = pd.DataFrame(previsoes_mm, index=index_prev_parcial[-janela:])
+
+ 
+
+    plt.figure(figsize=(8,5))
+
+    plt.plot(treino, label='treino')
+
+    plt.plot(teste, label='teste')
+
+    plt.plot(previsoes, label='previsao_sarima')
+
+    plt.plot(previsoes_mm, label='previsao_mm')
+
+    plt.legend(loc = 'upper left')
+
+    plt.show()
+
+        
+
+    previsoes = previsoes.iloc[-janela:].values  
+
+    previsao_mm = previsoes_mm.values
+
+   
+
+    consumo_real = sum(teste)
+
+    previsao = sum(previsoes)[0]
+
+    previsao_mm = sum(previsao_mm)[0]
+
+   
+
+    erro = ((previsao/consumo_real)-1)*100
+
+    erro_mm = ((previsao_mm/consumo_real)-1)*100
+
+ 
+
+    print('previsão de consumo ano: ', previsao)
+
+    print('previsão de consumo ano mm: ', previsao_mm)
+
+    print('consumo real: ', consumo_real)
+
+    print('erro em KWh: ', consumo_real-previsao)
+
+    print('erro em KWh mm: ', consumo_real-previsao_mm)   
+
+    print('erro percentual: {:.2f}%'.format(erro))
+
+    print('erro percentual mm: {:.2f}%'.format(erro_mm))
+
+   
+
+    
+
+    
+
+    return(consumo_real,previsao,erro, arima, erro_mm)
+
+ 
+
+ 
+
+########### TESTE #########
+
+import warnings
+
+warnings.filterwarnings('ignore')
+
+ 
+
+janela = 12
+
+sarimaParameters = {'p': 1, 'd': 1, 'q': 4, 'P': 0, 'D': 0, 'Q': 0, 'm': 12}
+
+ 
+
+df_decompose = df_teste.copy()
+
+df_decompose.drop('cluster', 1, inplace = True)
+
+df_decompose.drop('classificacao', 1, inplace = True)
+
+ 
+
+resultados_sarimax = []
+
+for a in tqdm.tqdm(range(len(df_teste))): 
+
+#for a in tqdm.tqdm(range(10)):
+
+    row = df_decompose.iloc[a,74:146]    
+
+    df_comb =pd.DataFrame(list(zip(row.index,row)),columns=['DATE','VALUE'])    
+
+    df_comb['DATE'] = pd.to_datetime(df_comb['DATE'], format="%d/%m/%Y")
+
+    df_comb['VALUE'] = df_comb['VALUE'].astype(float)   
+
+ 
+
+    agencia = str(df_decompose.iloc[a,0])
+
+   
+
+    serie = pd.Series(df_comb['VALUE'].values, index = df_comb['DATE'])
+
+   
+
+    # removendo outliers
+
+    median = serie.median()
+
+    std = serie.std()
+
+    outliers = (serie - median).abs() > std
+
+    serie[outliers] = median
+
+   
+
+    
+
+    train, test = split_train_test(serie)
+
+   
+
+    print('################### agência ' + agencia + ' #####################')
+
+   
+
+    consumo,previsao,erro, modelo, erro_mm = rollinwWndow(train, test, janela, sarimaParameters, agencia)   
+
+    resultados_sarimax.append((agencia, previsao, consumo, erro, modelo, erro_mm))
+
+   
+
+############### RESULTADOS ########
+
+df_resultados_sarimax = pd.DataFrame(resultados_sarimax, columns = ['agencia', 'previsao', 'consumo', 'erro', 'modelo', 'erro_mm'])
+
+df_resultados_sarimax.dropna()
+
+ 
+
+erros = df_resultados_sarimax['erro'].values
+
+print(statistics.median(erros))
+
+ 
+
+erro_mm = df_resultados_sarimax['erro_mm'].values
+
+print(statistics.median(erro_mm))
+
+ 
+
+ 
+
+f = plt.figure(figsize=(12,8))
+
+sns.boxplot(data = erro_mm)
